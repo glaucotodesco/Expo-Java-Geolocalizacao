@@ -1,0 +1,8 @@
+**/node_modules/
+**/.expo/
+**/dist/
+**/target/
+backend/data/
+*.log
+.env
+.DS_Store
