@@ -1,32 +1,32 @@
-# Expo + Java — Geolocalização e Mapas
+# Expo + Java - Geolocalizacao com OpenStreetMap
 
-Exemplo didático mínimo para o projeto FieldOps: **capturar a localização atual, salvar no Spring Boot/H2, recuperar e mostrar marcadores em um mapa**. Não é um sistema de inspeções.
+Exemplo didatico pequeno: o aplicativo Expo captura uma coordenada pelo GPS, mostra-a em um mapa e a salva no Spring Boot/H2. **Nao exige Google Cloud, chave de API do Google Maps nem cartao de credito.**
 
-## Estrutura
+## Arquitetura e tecnologias
 
-- `mobile/`: Expo + React Native + TypeScript, `expo-location`, `react-native-maps` (Android/iOS com Expo Go).
-- `backend/`: Java 21 + Spring Boot 3.5 + JPA + H2 persistente.
+- `mobile/`: Expo SDK 57, TypeScript e `expo-location` para permissao e GPS.
+- O mapa usa **OpenStreetMap + Leaflet**. No Android/iOS, Leaflet roda em uma `react-native-webview`; no navegador, Leaflet e renderizado diretamente.
+- `backend/`: Java 21, Spring Boot, Spring Data JPA e H2.
 
-## 1. Iniciar o backend
+GPS determina coordenadas; o mapa apenas desenha essas coordenadas e seus arredores. Nenhuma coordenada e enviada ao servidor antes de tocar em **Salvar localizacao**.
 
-Instale JDK 21 e Maven 3.9+. Em um terminal:
+## Executar
+
+Inicie o backend (JDK 21 e Maven 3.9+):
 
 ```bash
 cd backend
 mvn spring-boot:run
 ```
 
-A API estará em `http://localhost:8080`; H2 persistirá em `backend/data/` (ignorado pelo Git).
-Teste:
+A API fica em `http://localhost:8080`. Endpoints didaticos:
 
 ```bash
 curl http://localhost:8080/api/locations
 curl -X POST http://localhost:8080/api/locations -H "Content-Type: application/json" -d '{"name":"Teste","latitude":-23.5003,"longitude":-47.4582}'
 ```
 
-## 2. Iniciar o mobile
-
-Instale Node.js 22.13+ e Expo Go no dispositivo. O projeto usa **Expo SDK 57**.
+Para o app:
 
 ```bash
 cd mobile
@@ -35,23 +35,23 @@ npx expo install --check
 npm start
 ```
 
-Antes de abrir o aplicativo, defina o IP LAN do computador que executa o Java em `mobile/src/api.ts` (constante `API_BASE_URL`). **Não use localhost no dispositivo**. Celular e computador devem estar na mesma rede; libere a porta TCP 8080 no firewall, se necessário.
+Abra pelo Expo Go em Android/iOS ou pressione `w` para executar no navegador. Antes de usar um celular, copie `mobile/.env.example` para `.env` e ajuste `EXPO_PUBLIC_API_BASE_URL` para o IP LAN do computador (por exemplo `http://192.168.1.10:8080`); celular e computador devem estar na mesma rede e a porta 8080 deve estar liberada. No navegador, `localhost` pode ser usado se o backend estiver na mesma maquina.
 
-No Expo Go: **Minha localização → Salvar localização → Carregar locais**. O GPS requer permissão do sistema. Pressionar um marcador exibe seu nome. Nenhuma coordenada é enviada sem tocar em Salvar.
+## Roteiro de teste
 
-> Esta versão usa **mapas nativos Android/iOS**. O navegador não é alvo desse exemplo mínimo: `react-native-maps` não implementa Web. Caso a turma precise de Web, incluir uma implementação separada (ex.: Leaflet).
+1. Inicie backend e Expo.
+2. Toque em **Minha localizacao** e conceda a permissao.
+3. Confira latitude, longitude, precisao e o marcador azul centralizado.
+4. Toque em **Salvar localizacao**; depois em **Carregar locais**.
+5. Confirme os marcadores vermelhos e seus pop-ups com nome e coordenadas.
+6. Negue a permissao ou desligue GPS/rede para observar as mensagens de erro.
 
-## API
+`POST /api/locations` aceita latitude de -90 a 90 e longitude de -180 a 180; valores invalidos retornam 400. `GET /api/locations` pode retornar uma lista vazia.
 
-- `POST /api/locations` com JSON `{"name":"Local A","latitude":-23.5,"longitude":-47.45}` → 201 e registro salvo.
-- `GET /api/locations` → lista de registros em JSON, possivelmente vazia.
+## Observacoes importantes
 
-Validação: latitude -90..90; longitude -180..180. Endpoints **didáticos e sem autenticação**: use somente em rede local confiável.
+O navegador exige permissao de localizacao e contexto seguro (HTTPS ou `localhost`). Em dispositivos, GPS desativado, permissao negada, rede indisponivel ou uma captura superior a 20 segundos geram tratamento amigavel; tente novamente depois de corrigir a causa.
 
-## Exercício FieldOps
+Os tiles vem dos servidores publicos do OpenStreetMap, com atribuicao visivel. Eles dependem de conectividade, nao possuem SLA ou capacidade ilimitada e nao devem ser usados para pre-carregar/baixar mapas em massa. Este exemplo faz somente as requisicoes normais do mapa interativo e nao oferece modo offline.
 
-No projeto FieldOps dos alunos, escolher uma inspeção, registrar coordenadas com consentimento, persistir na arquitetura existente e renderizar marcador ao recuperar a inspeção. **Não copiar diretamente a entidade didática nem substituir o fluxo Offline First**.
-
-## Documentação
-
-[Material no Notion](https://app.notion.com/p/3fa5d52a81f581a5a8cafe55df835106) · [Expo Location](https://docs.expo.dev/versions/latest/sdk/location/) · [React Native Maps](https://docs.expo.dev/versions/latest/sdk/map-view/)
+O backend nao tem autenticacao e deve ser usado apenas em rede local confiavel para fins didaticos.

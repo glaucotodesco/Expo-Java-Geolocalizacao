@@ -7,6 +7,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/locations")
+@CrossOrigin // Permite que o exemplo Expo Web acesse a API local durante as aulas.
 public class LocationController {
     private final LocationRepository repository;
     public LocationController(LocationRepository repository) { this.repository = repository; }

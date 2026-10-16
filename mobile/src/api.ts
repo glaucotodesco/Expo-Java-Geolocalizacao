@@ -7,8 +7,8 @@ export type SavedLocation = {
 };
 
 // Troque pelo IP LAN do computador onde o Spring Boot está executando.
-// Exemplo: http://192.168.1.100:8080
-export const API_BASE_URL = 'http://192.168.1.100:8080';
+// IP Wi-Fi deste computador. Celular e computador devem estar na mesma rede.
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://10.220.20.94:8080';
 
 async function assertOk(response: Response): Promise<void> {
   if (!response.ok) {
