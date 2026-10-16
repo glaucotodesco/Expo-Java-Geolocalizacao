@@ -1,3 +1,31 @@
+.leaflet-container {
+  background: #ddd;
+  cursor: grab;
+  font: 12px/1.5 Arial, sans-serif;
+  overflow: hidden;
+  outline: 0;
+  position: relative;
+}
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-popup,
+.leaflet-control {
+  position: absolute;
+}
+
+.leaflet-pane { left: 0; top: 0; }
+.leaflet-tile { pointer-events: none; user-select: none; }
+.leaflet-marker-icon { cursor: pointer; }
+.leaflet-control-container { pointer-events: none; }
+.leaflet-control { pointer-events: auto; z-index: 800; }
+.leaflet-bottom { bottom: 0; position: absolute; }
+.leaflet-right { right: 0; }
+.leaflet-control-attribution { background: rgb(255 255 255 / 80%); padding: 0 5px; }
+.leaflet-popup-content-wrapper { background: #fff; border-radius: 4px; box-shadow: 0 2px 8px #555; }
+.leaflet-popup-content { margin: 10px 14px; }
+
 .location-current,
 .location-saved {
   border: 3px solid #fff;

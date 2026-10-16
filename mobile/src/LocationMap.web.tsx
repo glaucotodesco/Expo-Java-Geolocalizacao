@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 import './LocationMap.web.css';
 import type { LocationMapProps } from './LocationMap.types';
 const INITIAL: L.LatLngExpression = [-23.5003, -47.4582];
