@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, Button, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import LocationMap from './src/LocationMap';
 import { getLocations, saveLocation, type SavedLocation } from './src/api';
@@ -63,7 +63,8 @@ export default function App() {
     });
   }
 
-  return <SafeAreaView style={styles.container}>
+  return <SafeAreaProvider style={styles.container}>
+    <SafeAreaView style={styles.container}>
     <Text style={styles.title}>Meus Locais - GPS + Java</Text>
     <Text style={styles.info}>{position ? `Lat: ${position.latitude.toFixed(6)} | Lon: ${position.longitude.toFixed(6)} | Precisao: ${position.accuracy?.toFixed(0) ?? '?'} m` : 'Posicao ainda nao capturada'}</Text>
     <LocationMap position={position} savedLocations={saved} focusToken={focusToken} />
@@ -74,7 +75,8 @@ export default function App() {
     </View>
     {busy && <ActivityIndicator />}
     <Text style={styles.message}>{message}</Text>
-  </SafeAreaView>;
+    </SafeAreaView>
+  </SafeAreaProvider>;
 }
 
 const styles = StyleSheet.create({
